@@ -4,8 +4,8 @@ module Rooty
     attr_reader :namespace, :method, :content
     
     def initialize(namespace, method, content)
-      @namespace = namespace
-      @method = method
+      @namespace = Rooty::Binding.new(namespace)
+      @method = Rooty::Binding.new(method)
       @content = content
     end
     

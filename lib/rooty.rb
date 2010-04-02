@@ -6,6 +6,7 @@
 # -- test namespace is given
 # - unsubscribe
 # - routing with regular expressions
+# - aggregate method and namespace into one object
 
 require 'rubygems'
 require 'active_support'
@@ -14,6 +15,7 @@ require 'uuid'
 require 'rooty/event_router'
 require 'rooty/event'
 require 'rooty/subscription'
+require 'rooty/async/resque_job'
 
 module Rooty
   
@@ -35,6 +37,8 @@ module Rooty
   end
   
 end
+
+__END__
 
 class MockHandler
   def run(e)

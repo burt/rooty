@@ -1,0 +1,1 @@
+require 'rooty/rails/active_model'
