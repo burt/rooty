@@ -1,0 +1,36 @@
+require 'active_support'
+
+## root down
+
+EventRouter.subscribe "user", :method => "after_create" do
+  # block becomes handler
+end
+
+EventRouter.subscribe "comment", :method => "after_find", :handler => lambda {|e| puts e}
+
+EventRouter.map :handler => NotificationFactory.new, :async => true do |e|
+  subscribe "post#after_create" => lambda { |e| puts e }
+  subscribe "post", :method => ["after_create", "after_find"]
+  subscribe "post#after_find" do
+    # this is a handler
+  end
+  subscribe /someregex/, :method => /somemethod/
+end
+
+class NotificationFactory
+
+  def method_missing(sym, *args, &block)
+    # Notification.create() ...
+  end
+
+end
+
+# subscribe returns an array of methods
+
+class Subscription
+
+  attr_accessor :namespace, :method, :handler
+
+end
+
+## should be able to add and remove different notifiers from the database eventually
