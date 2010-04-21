@@ -29,6 +29,8 @@ module Rooty
   
 end
 
+__END__
+
 class MockHandler
   def run(e)
     puts "mock handler #{e.inspect}"
