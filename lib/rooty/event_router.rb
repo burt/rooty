@@ -6,20 +6,27 @@ module Rooty
     
     def initialize
       @subscribers = []
+      @cache = {}
     end
     
     def notify(event)
-      responders = @subscribers.select { |s| s.respond_to_event?(event) }
+      responders = @cache[event.namespace] ||= @subscribers.select { |s| s.respond_to_event?(event) }
       responders.each { |r| r.notify(event) }
     end
     
     def subscribe(namespace, opts = {}, &block)
+      flush
       handler = block_given? ? block : opts[:handler]
       @subscribers << Subscription.new(namespace, handler)
     end
     
     def unsubscribe
       # todo: use partition to set the arrays and return the deleted ones
+      # flush
+    end
+    
+    def flush
+      @cache = {} unless @cache.empty?
     end
     
     def map(opts = {}, &block)

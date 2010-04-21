@@ -1,7 +1,7 @@
 require 'rubygems'
+require 'singleton'
 require 'active_support'
 require 'uuid'
-require 'singleton'
 
 require 'rooty/binding'
 require 'rooty/event_router'
