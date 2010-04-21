@@ -10,6 +10,7 @@ module Rooty
     end
     
     def notify(event)
+      puts ">> notify [#{event.inspect}]"
       responders = @cache[event.namespace] ||= @subscribers.select { |s| s.respond_to_event?(event) }
       responders.each { |r| r.notify(event) }
     end
