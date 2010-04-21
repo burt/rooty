@@ -1,5 +1,3 @@
-require 'singleton'
-
 module Rooty
   class EventRouter
     include Singleton
@@ -12,26 +10,12 @@ module Rooty
     
     def notify(event)
       responders = @subscribers.select { |s| s.respond_to_event?(event) }
-      responders.each do |r|
-        if r.async == true
-          puts ">>>>>>>>>>>>>>> q this event"
-          # get the adaptor from config
-          Resque.enqueue(Rooty::Async::ResqueJob, event.namespace.value)
-        else
-          puts ">>>>>>>>>>>>>>> execute this event"
-          r.notify(event)
-        end
-      end
+      responders.each { |r| r.notify(event) }
     end
     
     def subscribe(namespace, opts = {}, &block)
-      methods = [*opts[:method]].compact
       handler = block_given? ? block : opts[:handler]
-      async = opts[:async] == true
-      subs = []
-      methods.each { |m| subs << Subscription.new(namespace, m, handler, async) }
-      @subscribers += subs
-      subs
+      @subscribers << Subscription.new(namespace, handler)
     end
     
     def unsubscribe

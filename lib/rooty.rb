@@ -1,28 +1,19 @@
-# TODO
-# - unique ids for subscriptions
-# - error handling
-# -- test handler is valid
-# -- test methods are supplied
-# -- test namespace is given
-# - unsubscribe
-# - routing with regular expressions
-# - aggregate method and namespace into one object
-
 require 'rubygems'
 require 'active_support'
 require 'uuid'
+require 'singleton'
 
+require 'rooty/binding'
 require 'rooty/event_router'
 require 'rooty/event'
 require 'rooty/subscription'
-require 'rooty/async/resque_job'
 
 module Rooty
   
   class << self
   
-    def notify(namespace, method, content)
-      e = Rooty::Event.new(namespace, method, content)
+    def notify(namespace, content)
+      e = Rooty::Event.new(namespace, content)
       Rooty::EventRouter.notify(e)
     end
   
@@ -38,31 +29,27 @@ module Rooty
   
 end
 
-__END__
-
 class MockHandler
   def run(e)
-    puts "mock handler #{e}"
+    puts "mock handler #{e.inspect}"
   end
 end
 
-#Rooty.subscribe "post", :method => "after_create" do |e|
+#Rooty.subscribe "post#after_create" do |e|
 #  puts "ok from proc '#{e.content[:message]}'"
 #end
-
-#Rooty.subscribe "post", :method => "after_create", :handler => lambda { |e| puts "ok from inline proc #{e}" }
-
-#Rooty.subscribe "post", :method => "after_create", :handler => MockHandler.new
-
+#Rooty.subscribe "post#after_create", :handler => lambda { |e| puts "ok from inline proc #{e}" }
+#Rooty.subscribe "post#after_create", :handler => MockHandler.new
 
 r = Rooty.map :handler => MockHandler.new do
-  subscribe "post", :method => "after_create"
-  subscribe "post", :method => "after_create"
+  # subscribe :arse
+  subscribe /post#\w+/
 end
 
-#r = Rooty.subscribe "post", :method => "after_create", :handler => MockHandler.new
+# r = Rooty.subscribe "post#after_create", :handler => MockHandler.new
+# puts "returned #{r.size}"
 
-puts "returned #{r.size}"
+Rooty.notify("post#after_create", :message => "hello")
 
-Rooty.notify("post", "after_create", :message => "hello")
+# Rooty.notify(:arse, :message => "hello")
 

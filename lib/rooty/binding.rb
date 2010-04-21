@@ -7,12 +7,19 @@ module Rooty
       @value = value
     end
     
-    def ==(other)
-      return false unless other.is_a?(Rooty::Binding)
-      other.value.to_s == value.to_s
+    def matches?(namespace)
+      return false if namespace.nil?
+      case @value
+        when String
+          @value == namespace.to_s
+        when Symbol
+          @value == namespace.to_sym
+        when Regexp
+          namespace.to_s.match @value
+        else
+          false
+      end
     end
-    
-    # TODO: override to_s
     
   end
 end

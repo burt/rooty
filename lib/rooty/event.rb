@@ -1,11 +1,10 @@
 module Rooty
   class Event
     
-    attr_reader :namespace, :method, :content
+    attr_reader :namespace, :content
     
-    def initialize(namespace, method, content)
-      @namespace = Rooty::Binding.new(namespace)
-      @method = Rooty::Binding.new(method)
+    def initialize(namespace, content)
+      @namespace = namespace
       @content = content
     end
     

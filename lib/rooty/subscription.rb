@@ -1,19 +1,16 @@
 module Rooty
   class Subscription
   
-    attr_reader :namespace, :method, :handler, :uuid
-    attr_accessor :async
+    attr_reader :uuid, :binding, :handler
   
-    def initialize(namespace, method, handler, async)
+    def initialize(namespace, handler)
       @uuid = UUID.new.generate
-      @namespace = Rooty::Binding.new(namespace)
-      @method = Rooty::Binding.new(method)
+      @binding = Rooty::Binding.new(namespace)
       @handler = handler
-      @async = async
     end
   
     def respond_to_event?(event)
-      event.namespace == namespace && event.method == method
+      binding.matches?(event.namespace)
     end
   
     def notify(event)
